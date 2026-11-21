@@ -1,0 +1,6 @@
+{
+  "name": "MUSICVERSE AI",
+  "description": "AI-powered music player with local library scanning, Media3 playback, real-time synced glass lyrics, audio equalizer, cloud playlists, and Gemini AI Music Assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

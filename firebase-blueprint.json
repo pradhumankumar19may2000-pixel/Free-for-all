@@ -1,0 +1,91 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated user account profile, subscription tier, audio quality preference, and privacy settings.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID of the owner." },
+        "displayName": { "type": "string", "description": "User display name." },
+        "email": { "type": "string", "description": "User email address." },
+        "photoUrl": { "type": "string", "description": "Optional profile avatar URL." },
+        "subscriptionTier": { "type": "string", "enum": ["FREE", "PREMIUM"], "description": "Current plan tier." },
+        "analyticsEnabled": { "type": "boolean", "description": "Whether listening analytics are enabled." },
+        "personalizationEnabled": { "type": "boolean", "description": "Whether AI personalization is enabled." },
+        "preferredQuality": { "type": "string", "enum": ["NORMAL", "HIGH", "LOSSLESS"], "description": "Streaming and download quality preference." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp of creation via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp of last update via FieldValue.serverTimestamp()." }
+      },
+      "required": ["userId", "displayName", "email", "subscriptionTier", "analyticsEnabled", "personalizationEnabled", "preferredQuality", "createdAt", "updatedAt"]
+    },
+    "CloudPlaylist": {
+      "title": "CloudPlaylist",
+      "description": "User-created or AI-generated playlist synchronized across devices.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner Firebase Auth UID." },
+        "name": { "type": "string", "description": "Playlist display name." },
+        "description": { "type": "string", "description": "Optional playlist notes." },
+        "trackIds": { "type": "array", "description": "Ordered list of track IDs (max 200)." },
+        "smartPlaylist": { "type": "boolean", "description": "True if generated from smart rules or AI." },
+        "smartRule": { "type": "string", "description": "Optional smart rule or AI prompt summary." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." }
+      },
+      "required": ["userId", "name", "trackIds", "smartPlaylist", "createdAt", "updatedAt"]
+    },
+    "FavoriteTrack": {
+      "title": "FavoriteTrack",
+      "description": "User liked/favorite track synced to cloud.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner Firebase Auth UID." },
+        "trackId": { "type": "string", "description": "Canonical track identifier." },
+        "title": { "type": "string", "description": "Track title." },
+        "artist": { "type": "string", "description": "Track artist." },
+        "album": { "type": "string", "description": "Album title." },
+        "durationMs": { "type": "integer", "description": "Track duration in milliseconds." },
+        "sourceType": { "type": "string", "enum": ["BUNDLED", "LOCAL", "CATALOG"], "description": "Track origin." },
+        "artworkUri": { "type": "string", "description": "Optional artwork URL." },
+        "streamUrl": { "type": "string", "description": "Optional authorized stream URL." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." }
+      },
+      "required": ["userId", "trackId", "title", "artist", "album", "durationMs", "sourceType", "createdAt"]
+    },
+    "ListeningHistoryEntry": {
+      "title": "ListeningHistoryEntry",
+      "description": "Track play count and recency record for recently played, most played, and AI recommendations.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner Firebase Auth UID." },
+        "trackId": { "type": "string", "description": "Canonical track identifier." },
+        "title": { "type": "string", "description": "Track title." },
+        "artist": { "type": "string", "description": "Track artist." },
+        "album": { "type": "string", "description": "Album title." },
+        "genre": { "type": "string", "description": "Genre label." },
+        "playCount": { "type": "integer", "description": "Total play count (>= 1)." },
+        "lastPlayedAt": { "type": "string", "format": "date-time", "description": "Server timestamp of latest play." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp of initial play." }
+      },
+      "required": ["userId", "trackId", "title", "artist", "album", "genre", "playCount", "lastPlayedAt", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profile, subscription plan, and privacy preferences."
+    },
+    "/users/{userId}/playlists/{playlistId}": {
+      "schema": { "$ref": "#/entities/CloudPlaylist" },
+      "description": "User playlists synchronized across logged-in devices."
+    },
+    "/users/{userId}/favorites/{trackId}": {
+      "schema": { "$ref": "#/entities/FavoriteTrack" },
+      "description": "Liked and favorite tracks per user."
+    },
+    "/users/{userId}/history/{historyId}": {
+      "schema": { "$ref": "#/entities/ListeningHistoryEntry" },
+      "description": "Listening history and play frequency counters per user."
+    }
+  }
+}
